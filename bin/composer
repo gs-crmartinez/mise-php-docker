@@ -1,31 +1,28 @@
 #!/usr/bin/env bash
-# Composer Docker shim for mise
 
-# Try to read Composer version from mise config
-COMPOSER_VERSION=""
+PHP_VERSION=""
 if command -v mise &> /dev/null; then
-  COMPOSER_VERSION=$(mise current composer 2>/dev/null | awk '{print $2}')
+  PHP_VERSION=$(mise current php 2>/dev/null | awk '{print $2}')
 fi
 
-# Build image name with version or use default
-if [ -n "$COMPOSER_VERSION" ]; then
-  DEFAULT_IMAGE="composer:${COMPOSER_VERSION}"
+if [ -n "$PHP_VERSION" ]; then
+  DEFAULT_IMAGE="mise-insided-php:${PHP_VERSION}"
 else
-  DEFAULT_IMAGE="composer:2.2"
+  DEFAULT_IMAGE="mise-insided-php:7.4"
 fi
 
 IMAGE="${COMPOSER_DOCKER_IMAGE:-$DEFAULT_IMAGE}"
 
-# Mount current directory and set working dir
-# Use -i for scripts, -it for interactive sessions
+DOCKER_ARGS=(
+  "--rm"
+  "-v" "$(pwd):/app"
+  "-w" "/app"
+)
+
 if [ -t 0 ]; then
-  docker run --rm -it \
-    -v "$(pwd)":/app \
-    -w /app \
-    "$IMAGE" composer "$@"
+  DOCKER_ARGS+=("-it")
 else
-  docker run --rm -i \
-    -v "$(pwd)":/app \
-    -w /app \
-    "$IMAGE" composer "$@"
+  DOCKER_ARGS+=("-i")
 fi
+
+docker run "${DOCKER_ARGS[@]}" "$IMAGE" composer "$@"

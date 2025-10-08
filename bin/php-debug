@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+export XDEBUG_MODE=debug
+exec "$(dirname "$0")/php" "$@"

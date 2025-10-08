@@ -1,29 +1,37 @@
 #!/usr/bin/env bash
 
-# Try to read PHP version from mise config
 PHP_VERSION=""
 if command -v mise &> /dev/null; then
   PHP_VERSION=$(mise current php 2>/dev/null | awk '{print $2}')
 fi
 
 if [ -n "$PHP_VERSION" ]; then
-  DEFAULT_IMAGE="php:${PHP_VERSION}-cli"
+  DEFAULT_IMAGE="mise-insided-php:${PHP_VERSION}"
 else
-  DEFAULT_IMAGE="php:7.4-cli"
+  DEFAULT_IMAGE="mise-insided-php:7.4"
 fi
 
 IMAGE="${PHP_DOCKER_IMAGE:-$DEFAULT_IMAGE}"
+XDEBUG_ENABLED="${XDEBUG_MODE:-off}"
 
-# Mount current directory and set working dir
-# Use -i for scripts, -it for interactive sessions
+DOCKER_ARGS=(
+  "--rm"
+  "-v" "$(pwd):/app"
+  "-w" "/app"
+)
+
 if [ -t 0 ]; then
-  docker run --rm -it \
-    -v "$(pwd)":/app \
-    -w /app \
-    "$IMAGE" php "$@"
+  DOCKER_ARGS+=("-it")
 else
-  docker run --rm -i \
-    -v "$(pwd)":/app \
-    -w /app \
-    "$IMAGE" php "$@"
+  DOCKER_ARGS+=("-i")
 fi
+
+if [ "$XDEBUG_ENABLED" != "off" ]; then
+  DOCKER_ARGS+=(
+    "-e" "XDEBUG_MODE=${XDEBUG_ENABLED}"
+    "-p" "9003:9003"
+    "--add-host=host.docker.internal:host-gateway"
+  )
+fi
+
+docker run "${DOCKER_ARGS[@]}" "$IMAGE" php "$@"
