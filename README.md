@@ -1,6 +1,6 @@
 # mise-php-docker
 
-A mise plugin that runs PHP 8, Composer, and Xdebug inside Docker containers automatically.
+A mise plugin that runs PHP 8 and Composer inside Docker containers automatically.
 
 ## Prerequisites
 
@@ -11,9 +11,8 @@ A mise plugin that runs PHP 8, Composer, and Xdebug inside Docker containers aut
 
 - **Auto-build**: Docker image builds automatically on first use
 - **Unified image**: PHP and Composer use the same image (guaranteed version match)
-- **Xdebug support**: Built-in debugging with VSCode integration
-- **Version-aware**: Reads versions from `.mise.toml` automatically
-- **Common extensions**: Includes PDO, MySQL, MySQLi out of the box
+- **Version-aware**: Reads versions from `.mise.toml` and `.tool-versions` files
+- **Common extensions**: Includes PDO, MySQL, MySQLi, ZIP out of the box
 
 ## Installation
 
@@ -41,32 +40,6 @@ composer -V               # Composer version
 composer install
 php artisan migrate
 ```
-
-### Debugging with Xdebug
-
-Enable step debugging from VSCode:
-
-```bash
-# Method 1: Use the php-debug wrapper
-php-debug vendor/bin/phpunit tests/MyTest.php
-
-# Method 2: Set XDEBUG_MODE environment variable
-XDEBUG_MODE=debug php vendor/bin/phpunit tests/MyTest.php
-
-# Method 3: Export for entire session
-export XDEBUG_MODE=debug
-php vendor/bin/phpunit tests/MyTest.php
-```
-
-**VSCode Setup:**
-
-1. Copy [.vscode/launch.json](.vscode/launch.json) to your project
-2. Install the [PHP Debug extension](https://marketplace.visualstudio.com/items?itemName=xdebug.php-debug)
-3. Set breakpoints in your PHP files
-4. Start debugging with F5 → "Listen for Xdebug"
-5. Run your PHP script with `php-debug` or `XDEBUG_MODE=debug`
-
-The debugger will pause at your breakpoints automatically.
 
 ## Configuration
 
@@ -115,7 +88,6 @@ The plugin provides executable shims in `bin/` that wrap Docker commands:
 
 - `bin/php` → Auto-builds `mise-php-docker:8` if needed, then runs `docker run mise-php-docker:8 php ...`
 - `bin/composer` → Auto-builds `mise-php-docker:8` if needed, then runs `docker run mise-php-docker:8 composer ...`
-- `bin/php-debug` → Sets `XDEBUG_MODE=debug` and calls `bin/php`
 
 mise automatically adds these to your PATH when the plugin is active.
 
@@ -144,13 +116,6 @@ Make sure Docker is running:
 ```bash
 docker ps
 ```
-
-### Xdebug not connecting
-
-1. Check VSCode is listening (F5 → "Listen for Xdebug")
-2. Verify port 9003 is not blocked by firewall
-3. Enable debug logging in [.vscode/launch.json](.vscode/launch.json) (`"log": true`)
-4. Check Docker can reach host: `docker run --rm --add-host=host.docker.internal:host-gateway alpine ping -c 1 host.docker.internal`
 
 ### Adding more PHP extensions
 

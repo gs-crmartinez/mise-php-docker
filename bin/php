@@ -22,8 +22,6 @@ if ! docker image inspect "$IMAGE" &> /dev/null; then
   }
 fi
 
-XDEBUG_ENABLED="${XDEBUG_MODE:-off}"
-
 DOCKER_ARGS=(
   "--rm"
   "-v" "$(pwd):/app"
@@ -34,14 +32,6 @@ if [ -t 0 ]; then
   DOCKER_ARGS+=("-it")
 else
   DOCKER_ARGS+=("-i")
-fi
-
-if [ "$XDEBUG_ENABLED" != "off" ]; then
-  DOCKER_ARGS+=(
-    "-e" "XDEBUG_MODE=${XDEBUG_ENABLED}"
-    "-p" "9003:9003"
-    "--add-host=host.docker.internal:host-gateway"
-  )
 fi
 
 docker run "${DOCKER_ARGS[@]}" "$IMAGE" php "$@"
