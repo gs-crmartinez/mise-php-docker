@@ -17,16 +17,16 @@ A mise plugin that runs PHP 8, Composer, and Xdebug inside Docker containers aut
 
 ## Installation
 
-### Option 1: Install from local path
-
-```bash
-mise plugin add mise-php-docker /Users/cristian.martinez/insided/dev/mise-insided-plugin
-```
-
-### Option 2: Install from git repository
+### Option 1: Install from git repository
 
 ```bash
 mise plugin add mise-php-docker https://github.com/gs-crmartinez/mise-php-docker.git
+```
+
+### Option 2: Install from local path
+
+```bash
+mise plugin add mise-php-docker /path/to/mise-php-docker
 ```
 
 ## Usage
