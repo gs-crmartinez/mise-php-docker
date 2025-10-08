@@ -6,12 +6,22 @@ if command -v mise &> /dev/null; then
 fi
 
 if [ -n "$PHP_VERSION" ]; then
-  DEFAULT_IMAGE="mise-insided-php:${PHP_VERSION}"
+  DEFAULT_IMAGE="mise-php-docker:${PHP_VERSION}"
 else
-  DEFAULT_IMAGE="mise-insided-php:7.4"
+  DEFAULT_IMAGE="mise-php-docker:8"
 fi
 
 IMAGE="${PHP_DOCKER_IMAGE:-$DEFAULT_IMAGE}"
+
+if ! docker image inspect "$IMAGE" &> /dev/null; then
+  echo "Building Docker image $IMAGE..." >&2
+  PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+  docker build -t "$IMAGE" "$PLUGIN_DIR" || {
+    echo "Failed to build Docker image" >&2
+    exit 1
+  }
+fi
+
 XDEBUG_ENABLED="${XDEBUG_MODE:-off}"
 
 DOCKER_ARGS=(

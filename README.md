@@ -1,49 +1,43 @@
-# mise-insided-plugin
+# mise-php-docker
 
-A mise plugin that runs PHP 7.4, Composer 2.2, and Xdebug 3.1 inside Docker containers automatically.
+A mise plugin that runs PHP 8, Composer, and Xdebug inside Docker containers automatically.
 
 ## Prerequisites
 
 - [mise](https://mise.jdx.dev/) installed
 - Docker running locally
 
-## Build the Docker Image
+## Features
 
-Before using this plugin, build the custom Docker image:
-
-```bash
-cd /Users/cristian.martinez/insided/dev/mise-insided-plugin
-docker build -t mise-insided-php:7.4 .
-```
-
-This creates a unified image with:
-- PHP 7.4 CLI
-- Composer 2.2 (compatible with PHP 7.4)
-- Xdebug 3.1 (for step debugging)
-
-**Important:** Both `php` and `composer` commands use the **same image**, ensuring PHP version consistency.
+- **Auto-build**: Docker image builds automatically on first use
+- **Unified image**: PHP and Composer use the same image (guaranteed version match)
+- **Xdebug support**: Built-in debugging with VSCode integration
+- **Version-aware**: Reads versions from `.mise.toml` automatically
+- **Common extensions**: Includes PDO, MySQL, MySQLi out of the box
 
 ## Installation
 
 ### Option 1: Install from local path
 
 ```bash
-mise plugin add mise-insided-plugin /Users/cristian.martinez/insided/dev/mise-insided-plugin
+mise plugin add mise-php-docker /Users/cristian.martinez/insided/dev/mise-insided-plugin
 ```
 
-### Option 2: Install from git repository (once published)
+### Option 2: Install from git repository
 
 ```bash
-mise plugin add mise-insided-plugin https://github.com/your-org/mise-insided-plugin.git
+mise plugin add mise-php-docker https://github.com/gs-crmartinez/mise-php-docker.git
 ```
 
 ## Usage
 
+The Docker image builds automatically on first use (may take a few minutes).
+
 Once installed, `php` and `composer` commands automatically run inside Docker:
 
 ```bash
-php -v                    # PHP 7.4.x (cli)
-composer -V               # Composer version 2.2.x
+php -v                    # PHP 8.x (cli)
+composer -V               # Composer version
 composer install
 php artisan migrate
 ```
@@ -82,10 +76,10 @@ Specify versions in `.mise.toml`:
 
 ```toml
 [tools]
-php = "7.4"
+php = "8"
 ```
 
-The plugin will use `mise-insided-php:7.4` Docker image for both PHP and Composer.
+The plugin will use `mise-php-docker:8` Docker image for both PHP and Composer. Defaults to PHP 8 if not specified.
 
 ### Custom Docker image override
 
@@ -93,10 +87,10 @@ Override with a custom image (if you've built one with extra extensions):
 
 ```toml
 [tools]
-php = "7.4"
+php = "8"
 
 [env]
-PHP_DOCKER_IMAGE = "your-registry/custom-php:7.4"
+PHP_DOCKER_IMAGE = "your-registry/custom-php:8"
 ```
 
 Both `php` and `composer` will use the custom image.
@@ -106,30 +100,21 @@ Both `php` and `composer` will use the custom image.
 Add to your shell config (~/.config/fish/config.fish):
 
 ```fish
-set -gx PHP_DOCKER_IMAGE "mise-insided-php:7.4"
+set -gx PHP_DOCKER_IMAGE "mise-php-docker:8"
 ```
 
 Or for Bash (~/.bashrc):
 
 ```bash
-export PHP_DOCKER_IMAGE="mise-insided-php:7.4"
+export PHP_DOCKER_IMAGE="mise-php-docker:8"
 ```
-
-## Features
-
-- **Unified Docker image**: PHP and Composer use the same image (guaranteed version match)
-- **Xdebug support**: Built-in debugging with VSCode integration
-- **Version-aware**: Reads versions from `.mise.toml` automatically
-- **Common extensions**: Includes PDO, MySQL, MySQLi out of the box
-- **Volume mounting**: Current directory automatically mounted to `/app`
-- **Interactive & non-interactive modes**: Works with both CLI and scripts
 
 ## How it works
 
 The plugin provides executable shims in `bin/` that wrap Docker commands:
 
-- `bin/php` → `docker run mise-insided-php:7.4 php ...`
-- `bin/composer` → `docker run mise-insided-php:7.4 composer ...`
+- `bin/php` → Auto-builds `mise-php-docker:8` if needed, then runs `docker run mise-php-docker:8 php ...`
+- `bin/composer` → Auto-builds `mise-php-docker:8` if needed, then runs `docker run mise-php-docker:8 composer ...`
 - `bin/php-debug` → Sets `XDEBUG_MODE=debug` and calls `bin/php`
 
 mise automatically adds these to your PATH when the plugin is active.
@@ -144,12 +129,12 @@ Ensure mise is properly configured:
 mise doctor
 ```
 
-### Docker image not found
+### Rebuilding the Docker image
 
-Build the Docker image first:
+To rebuild manually (e.g., after modifying the Dockerfile):
 
 ```bash
-docker build -t mise-insided-php:7.4 .
+docker build -t mise-php-docker:8 .
 ```
 
 ### Permission issues
@@ -178,5 +163,5 @@ RUN docker-php-ext-install gd zip bcmath
 Then rebuild:
 
 ```bash
-docker build -t mise-insided-php:7.4 .
+docker build -t mise-php-docker:8 .
 ```
