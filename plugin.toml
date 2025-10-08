@@ -1,0 +1,4 @@
+name = "mise-insided-plugin"
+version = "0.1.0"
+description = "Run PHP 7.4 and Composer inside Docker automatically"
+binaries = ["php", "composer"]

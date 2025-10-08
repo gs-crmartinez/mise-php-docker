@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+# Try to read PHP version from mise config
+PHP_VERSION=""
+if command -v mise &> /dev/null; then
+  PHP_VERSION=$(mise current php 2>/dev/null | awk '{print $2}')
+fi
+
+if [ -n "$PHP_VERSION" ]; then
+  DEFAULT_IMAGE="php:${PHP_VERSION}-cli"
+else
+  DEFAULT_IMAGE="php:7.4-cli"
+fi
+
+IMAGE="${PHP_DOCKER_IMAGE:-$DEFAULT_IMAGE}"
+
+# Mount current directory and set working dir
+# Use -i for scripts, -it for interactive sessions
+if [ -t 0 ]; then
+  docker run --rm -it \
+    -v "$(pwd)":/app \
+    -w /app \
+    "$IMAGE" php "$@"
+else
+  docker run --rm -i \
+    -v "$(pwd)":/app \
+    -w /app \
+    "$IMAGE" php "$@"
+fi
