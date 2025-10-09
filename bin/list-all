@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cat <<'EOF'
+8
+8.0
+8.1
+8.1.0
+8.2
+8.2.0
+8.3
+8.3.0
+8.4
+EOF

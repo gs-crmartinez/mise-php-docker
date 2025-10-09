@@ -1,4 +1,6 @@
-FROM php:8-cli
+ARG PHP_VERSION=8
+
+FROM php:${PHP_VERSION}-cli
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 

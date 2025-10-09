@@ -28,6 +28,14 @@ mise plugin add mise-php-docker https://github.com/gs-crmartinez/mise-php-docker
 mise plugin add mise-php-docker /path/to/mise-php-docker
 ```
 
+After adding the plugin (either option above), install the desired PHP version to create the shims:
+
+```bash
+mise install php@8
+```
+
+The install step builds (or pulls) the matching `mise-php-docker:<version>` image, so expect the first run for a given version to take a moment while Docker downloads layers.
+
 ## Usage
 
 The Docker image builds automatically on first use (may take a few minutes).

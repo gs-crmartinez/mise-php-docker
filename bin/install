@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+VERSION="${1:-}"
+INSTALL_DIR="${2:-}"
+
+if [ -z "$VERSION" ] || [ -z "$INSTALL_DIR" ]; then
+  echo "Usage: install <version> <install_dir>" >&2
+  exit 1
+fi
+
+PLUGIN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+mkdir -p "$(dirname "$INSTALL_DIR")"
+rm -rf "$INSTALL_DIR"
+mkdir -p "$INSTALL_DIR/bin"
+
+cp "$PLUGIN_ROOT/bin/php" "$INSTALL_DIR/bin/php"
+cp "$PLUGIN_ROOT/bin/composer" "$INSTALL_DIR/bin/composer"
+chmod +x "$INSTALL_DIR/bin/php" "$INSTALL_DIR/bin/composer"
+
+cp "$PLUGIN_ROOT/Dockerfile" "$INSTALL_DIR/Dockerfile"
+
+echo "$VERSION" > "$INSTALL_DIR/.mise-version"
+
+IMAGE_TAG="mise-php-docker:${VERSION}"
+
+if [ "$VERSION" != "system" ] && command -v docker &> /dev/null; then
+  echo "Building Docker image ${IMAGE_TAG} for PHP ${VERSION}..." >&2
+  if ! docker build -t "$IMAGE_TAG" --build-arg "PHP_VERSION=${VERSION}" "$INSTALL_DIR"; then
+    echo "Failed to build Docker image ${IMAGE_TAG}" >&2
+    exit 1
+  fi
+else
+  echo "Skipping Docker image build (docker not available or system version requested)." >&2
+fi
