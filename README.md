@@ -1,6 +1,6 @@
 # mise-php-docker
 
-A mise plugin that runs PHP 8 and Composer inside Docker containers automatically.
+A mise plugin that runs PHP 7/8 and Composer inside Docker containers automatically.
 
 ## Prerequisites
 
@@ -60,7 +60,8 @@ Specify versions in `.mise.toml`:
 php = "8"
 ```
 
-The plugin will use `mise-php-docker:8` Docker image for both PHP and Composer. Defaults to PHP 8 if not specified.
+The plugin will use `mise-php-docker:<version>` Docker image for both PHP and Composer. Defaults to PHP 8 if not specified.
+Run `mise list-all php` to see the bundled PHP 7.x/8.x options.
 
 ### Custom Docker image override
 
@@ -94,8 +95,8 @@ export PHP_DOCKER_IMAGE="mise-php-docker:8"
 
 The plugin provides executable shims in `bin/` that wrap Docker commands:
 
-- `bin/php` → Auto-builds `mise-php-docker:8` if needed, then runs `docker run mise-php-docker:8 php ...`
-- `bin/composer` → Auto-builds `mise-php-docker:8` if needed, then runs `docker run mise-php-docker:8 composer ...`
+- `bin/php` → Auto-builds `mise-php-docker:<version>` if needed, then runs `docker run mise-php-docker:<version> php ...`
+- `bin/composer` → Auto-builds `mise-php-docker:<version>` if needed, then runs `docker run mise-php-docker:<version> composer ...`
 
 mise automatically adds these to your PATH when the plugin is active.
 
