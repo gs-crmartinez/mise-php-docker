@@ -6,8 +6,11 @@ if [ "$#" -lt 2 ]; then
   exit 1
 fi
 
-INSTALL_DIR="${@: -1}"
-VERSION="${@: -2:1}"
+ARGS=("$@")
+ARG_COUNT=${#ARGS[@]}
+
+INSTALL_DIR="${ARGS[$((ARG_COUNT - 1))]}"
+VERSION="${ARGS[$((ARG_COUNT - 2))]}"
 
 if [ -z "$VERSION" ] || [ -z "$INSTALL_DIR" ]; then
   echo "Usage: install <version> <install_dir>" >&2
