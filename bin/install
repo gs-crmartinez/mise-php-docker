@@ -1,16 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [ "$#" -lt 2 ]; then
-  echo "Usage: install <version> <install_dir>" >&2
-  exit 1
-fi
-
 ARGS=("$@")
 ARG_COUNT=${#ARGS[@]}
 
-INSTALL_DIR="${ARGS[$((ARG_COUNT - 1))]}"
-VERSION="${ARGS[$((ARG_COUNT - 2))]}"
+VERSION=""
+INSTALL_DIR=""
+
+if [ "$ARG_COUNT" -ge 2 ]; then
+  INSTALL_DIR="${ARGS[$((ARG_COUNT - 1))]}"
+  VERSION="${ARGS[$((ARG_COUNT - 2))]}"
+elif [ "$ARG_COUNT" -eq 1 ]; then
+  VERSION="${ARGS[0]}"
+fi
+
+VERSION="${VERSION:-${RTX_INSTALL_VERSION:-${MISE_INSTALL_VERSION:-}}}"
+INSTALL_DIR="${INSTALL_DIR:-${RTX_INSTALL_PATH:-${MISE_INSTALL_PATH:-}}}"
 
 if [ -z "$VERSION" ] || [ -z "$INSTALL_DIR" ]; then
   echo "Usage: install <version> <install_dir>" >&2
