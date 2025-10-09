@@ -1,18 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [ "$#" -eq 3 ]; then
-  # Called as: install <plugin> <version> <install_dir>
-  VERSION="${2:-}"
-  INSTALL_DIR="${3:-}"
-elif [ "$#" -eq 2 ]; then
-  # Called as: install <version> <install_dir>
-  VERSION="${1:-}"
-  INSTALL_DIR="${2:-}"
-else
+if [ "$#" -lt 2 ]; then
   echo "Usage: install <version> <install_dir>" >&2
   exit 1
 fi
+
+INSTALL_DIR="${@: -1}"
+VERSION="${@: -2:1}"
 
 if [ -z "$VERSION" ] || [ -z "$INSTALL_DIR" ]; then
   echo "Usage: install <version> <install_dir>" >&2
