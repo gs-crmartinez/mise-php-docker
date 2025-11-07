@@ -1,4 +1,4 @@
 name = "mise-php-docker"
 version = "0.2.0"
 description = "Run PHP and Composer inside Docker automatically"
-binaries = ["php", "composer"]
+binaries = ["php", "composer", "php-shell"]

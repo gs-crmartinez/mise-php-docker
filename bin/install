@@ -24,6 +24,15 @@ fi
 
 PLUGIN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
+# Normalize PHP version to major.minor format for Docker base image
+# Examples: 7.4.33 -> 7.4, 8.2.5 -> 8.2, 8 -> 8
+normalize_php_version() {
+  local version="$1"
+  # Extract major.minor (e.g., 7.4.33 -> 7.4, 8.2.5 -> 8.2)
+  # If version is already major.minor or just major, keep it as is
+  echo "$version" | sed -E 's/^([0-9]+(\.[0-9]+)?).*/\1/' || echo "$version"
+}
+
 mkdir -p "$(dirname "$INSTALL_DIR")"
 rm -rf "$INSTALL_DIR"
 mkdir -p "$INSTALL_DIR/bin"
@@ -39,8 +48,9 @@ echo "$VERSION" > "$INSTALL_DIR/.mise-version"
 IMAGE_TAG="mise-php-docker:${VERSION}"
 
 if [ "$VERSION" != "system" ] && command -v docker &> /dev/null; then
-  echo "Building Docker image ${IMAGE_TAG} for PHP ${VERSION}..." >&2
-  if ! docker build -t "$IMAGE_TAG" --build-arg "PHP_VERSION=${VERSION}" "$INSTALL_DIR"; then
+  PHP_BASE_VERSION=$(normalize_php_version "$VERSION")
+  echo "Building Docker image ${IMAGE_TAG} for PHP ${VERSION} (using base image php:${PHP_BASE_VERSION}-cli)..." >&2
+  if ! docker build -t "$IMAGE_TAG" --build-arg "PHP_VERSION=${PHP_BASE_VERSION}" "$INSTALL_DIR"; then
     echo "Failed to build Docker image ${IMAGE_TAG}" >&2
     exit 1
   fi
