@@ -39,7 +39,8 @@ mkdir -p "$INSTALL_DIR/bin"
 
 cp "$PLUGIN_ROOT/bin/php" "$INSTALL_DIR/bin/php"
 cp "$PLUGIN_ROOT/bin/composer" "$INSTALL_DIR/bin/composer"
-chmod +x "$INSTALL_DIR/bin/php" "$INSTALL_DIR/bin/composer"
+cp "$PLUGIN_ROOT/bin/php-shell" "$INSTALL_DIR/bin/php-shell"
+chmod +x "$INSTALL_DIR/bin/php" "$INSTALL_DIR/bin/composer" "$INSTALL_DIR/bin/php-shell"
 
 cp "$PLUGIN_ROOT/Dockerfile" "$INSTALL_DIR/Dockerfile"
 
